@@ -1,13 +1,3 @@
----
-AIGC:
-    Label: "1"
-    ContentProducer: 001191440300708461136T1XGW3
-    ProduceID: 9cd70c0cdfe13467c199a834deb0bb00_ce41ac32cc5311f1ba6e525400de85a5
-    ReservedCode1: mViqMVsN8r/qp+MKHyiCa0kQsoo3jUIl41Q2waUFoeG0JjA1TQDQR7HK1Milj4hpQCBiekwFzucJglmfu4S1CEsGXLruh5q9aM9as7oM8o6CxY7HiPhY5K6j0ZNLp2chJVwhwt7Sk36FR35dX0OoDLqs059EiIrgj1+JaN6aJerfQB5cLYARpOR4f+s=
-    ContentPropagator: 001191440300708461136T1XGW3
-    PropagateID: 9cd70c0cdfe13467c199a834deb0bb00_ce41ac32cc5311f1ba6e525400de85a5
-    ReservedCode2: mViqMVsN8r/qp+MKHyiCa0kQsoo3jUIl41Q2waUFoeG0JjA1TQDQR7HK1Milj4hpQCBiekwFzucJglmfu4S1CEsGXLruh5q9aM9as7oM8o6CxY7HiPhY5K6j0ZNLp2chJVwhwt7Sk36FR35dX0OoDLqs059EiIrgj1+JaN6aJerfQB5cLYARpOR4f+s=
----
 
 # 季节风格穿搭测试 + 模拟穿搭选购系统
 
@@ -148,17 +138,4 @@ FinalWork/
 | 订单详情 | /order_detail.html | 订单号、时间、明细、实付总价、状态 |
 | 后台管理 | /admin.html | 仅 admin 可访问：题目/商品/订单管理 |
 
-## 六、数据库高级特性展示点
 
-- **视图**：`v_style_scene_product` 关联商品与分类，穿搭库列表直接查视图。
-- **触发器**：`trg_orderitem_after_insert` 在插入订单明细后自动扣库存并写 `StockRecord` 流水。
-- **存储过程**：`proc_create_order` 完成下单事务（汇总购物车 -> 写订单 -> 写明细 -> 清购物车，异常自动回滚）；`proc_style_statistic` 统计各季型人数。
-- **手写事务备选**：`backend/blueprints/order.py` 中注释保留 `create_order_manual()` 手写事务版本，便于对比讲解（存储过程方案 vs 应用层事务方案）。
-
-## 七、常见问题
-
-- **前端打不开**：确认先在 backend 目录执行 `python app.py`，浏览器访问 5000 端口。
-- **接口报 500 / Can't connect to MySQL**：MySQL 服务未启动，或 `config.py` 的 `DB_PASSWORD` 不是你的实际密码。
-- **下单提示购物车为空**：存储过程按当前登录用户整个购物车下单，请先勾选并确认购物车中有商品。
-- **占位图不够用**：后台新增商品时，图片字段留空会自动兜底 `images/p{商品ID}.svg`；若 ID 超过 20，运行 `python tools/gen_images.py --count <数量>` 补充。
-*（内容由AI生成，仅供参考）*
