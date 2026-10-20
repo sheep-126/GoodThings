@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>四季穿搭 - 风格测试与模拟选购</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="logo">四季穿搭</div>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" class="nav-link active" data-page="index">首页</a>
+        <a href="wardrobe.html" class="nav-link" data-page="wardrobe">穿搭库</a>
+        <a href="quiz.html" class="nav-link" data-page="quiz">风格测试</a>
+        <a href="profile.html" class="nav-link" data-page="profile">我的</a>
+        <a href="admin.html" class="nav-link admin-only" data-page="admin" style="display:none">后台管理</a>
+      </nav>
+      <div class="nav-right">
+        <a href="cart.html" class="btn btn-outline btn-sm">购物车</a>
+        <a href="login.html" class="btn btn-primary btn-sm" id="navLoginBtn">登录</a>
+        <span class="user-name" id="navUser" style="display:none"></span>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>找到属于你的四季色彩风格</h1>
+      <p>通过 10 道小问卷，测出你的春夏秋冬季型，并为你推荐整套穿搭</p>
+      <a href="quiz.html" class="btn btn-primary btn-lg">开始风格测试</a>
+      <a href="wardrobe.html" class="btn btn-outline btn-lg">逛逛穿搭库</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">热门套装推荐</h2>
+      <div class="card-grid" id="hotGrid">
+        <!-- 由 js/index.js 动态渲染 -->
+      </div>
+    </div>
+  </section>
+
+  <section class="section feature">
+    <div class="container">
+      <h2 class="section-title">三大功能</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <h3>四季风格测试</h3>
+          <p>依据“四季色彩理论”设计的 10 道题目，帮你定位春/夏/秋/冬季型。</p>
+        </div>
+        <div class="feature-card">
+          <h3>穿搭库选购</h3>
+          <p>按季型与场景筛选整套穿搭，查看单品明细，加入购物车模拟下单。</p>
+        </div>
+        <div class="feature-card">
+          <h3>模拟订单流程</h3>
+          <p>下单调用数据库存储过程，扣库存、写流水、生成订单，完整体验闭环。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>季节风格穿搭测试 + 模拟穿搭选购系统 · 课程设计（Flask + 原生三件套 + MySQL）</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/index.js"></script>
+</body>
+</html>

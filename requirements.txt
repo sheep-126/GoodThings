@@ -1,0 +1,4 @@
+# Python 依赖（Flask + MySQL 驱动）
+Flask==3.0.3
+PyMySQL==1.1.1
+（内容由AI生成，仅供参考）

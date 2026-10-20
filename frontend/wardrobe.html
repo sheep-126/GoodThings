@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>穿搭库 - 四季穿搭</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="logo">四季穿搭</div>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link" data-page="index">首页</a>
+        <a href="wardrobe.html" class="nav-link active" data-page="wardrobe">穿搭库</a>
+        <a href="quiz.html" class="nav-link" data-page="quiz">风格测试</a>
+        <a href="profile.html" class="nav-link" data-page="profile">我的</a>
+        <a href="admin.html" class="nav-link admin-only" data-page="admin" style="display:none">后台管理</a>
+      </nav>
+      <div class="nav-right">
+        <a href="cart.html" class="btn btn-outline btn-sm">购物车</a>
+        <a href="login.html" class="btn btn-primary btn-sm" id="navLoginBtn">登录</a>
+        <span class="user-name" id="navUser" style="display:none"></span>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">穿搭库</h2>
+      <div class="filter-bar">
+        <label>季型
+          <select id="styleFilter">
+            <option value="">全部</option>
+            <option value="春">春</option>
+            <option value="夏">夏</option>
+            <option value="秋">秋</option>
+            <option value="冬">冬</option>
+          </select>
+        </label>
+        <label>场景
+          <select id="sceneFilter">
+            <option value="">全部</option>
+            <option value="上课">上课</option>
+            <option value="约会聚会">约会聚会</option>
+            <option value="出游逛街">出游逛街</option>
+            <option value="居家">居家</option>
+          </select>
+        </label>
+        <label class="fav-only"><input type="checkbox" id="favFilter"> 只看我的收藏</label>
+        <span class="filter-count" id="countTip"></span>
+      </div>
+      <div class="card-grid" id="productGrid">
+        <!-- 由 js/wardrobe.js 动态渲染 -->
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>季节风格穿搭测试 + 模拟穿搭选购系统 · 课程设计（Flask + 原生三件套 + MySQL）</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/wardrobe.js"></script>
+</body>
+</html>

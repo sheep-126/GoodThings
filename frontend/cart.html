@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>购物车 - 四季穿搭</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="logo">四季穿搭</div>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link" data-page="index">首页</a>
+        <a href="wardrobe.html" class="nav-link" data-page="wardrobe">穿搭库</a>
+        <a href="quiz.html" class="nav-link" data-page="quiz">风格测试</a>
+        <a href="profile.html" class="nav-link" data-page="profile">我的</a>
+        <a href="admin.html" class="nav-link admin-only" data-page="admin" style="display:none">后台管理</a>
+      </nav>
+      <div class="nav-right">
+        <a href="cart.html" class="btn btn-outline btn-sm">购物车</a>
+        <a href="login.html" class="btn btn-primary btn-sm" id="navLoginBtn">登录</a>
+        <span class="user-name" id="navUser" style="display:none"></span>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">我的购物车</h2>
+      <div class="cart-table-wrap">
+        <table class="table cart-table" id="cartTable">
+          <thead>
+            <tr>
+              <th><input type="checkbox" id="checkAll"></th>
+              <th>商品</th>
+              <th>单价</th>
+              <th>数量</th>
+              <th>小计</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="cartBody">
+            <!-- 由 js/cart.js 动态渲染 -->
+          </tbody>
+        </table>
+      </div>
+      <div class="cart-bottom">
+        <span>已选 <b id="selCount">0</b> 件，合计 <b class="price" id="selTotal">¥0.00</b></span>
+        <button class="btn btn-primary btn-lg" id="submitOrderBtn">提交订单（模拟支付）</button>
+      </div>
+      <p class="tip">提示：提交订单将调用数据库存储过程 proc_create_order，按购物车全部商品生成订单并扣减库存，本系统为课程模拟，无真实支付。</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>季节风格穿搭测试 + 模拟穿搭选购系统 · 课程设计（Flask + 原生三件套 + MySQL）</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/cart.js"></script>
+</body>
+</html>

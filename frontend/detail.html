@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>套装详情 - 四季穿搭</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <div class="logo">四季穿搭</div>
+      <nav class="nav-links">
+        <a href="index.html" class="nav-link" data-page="index">首页</a>
+        <a href="wardrobe.html" class="nav-link" data-page="wardrobe">穿搭库</a>
+        <a href="quiz.html" class="nav-link" data-page="quiz">风格测试</a>
+        <a href="profile.html" class="nav-link" data-page="profile">我的</a>
+        <a href="admin.html" class="nav-link admin-only" data-page="admin" style="display:none">后台管理</a>
+      </nav>
+      <div class="nav-right">
+        <a href="cart.html" class="btn btn-outline btn-sm">购物车</a>
+        <a href="login.html" class="btn btn-primary btn-sm" id="navLoginBtn">登录</a>
+        <span class="user-name" id="navUser" style="display:none"></span>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container detail-box" id="detailBox">
+      <!-- 由 js/detail.js 渲染 -->
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <p>季节风格穿搭测试 + 模拟穿搭选购系统 · 课程设计（Flask + 原生三件套 + MySQL）</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/detail.js"></script>
+</body>
+</html>
