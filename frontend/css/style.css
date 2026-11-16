@@ -167,22 +167,49 @@ a { color: var(--primary); text-decoration: none; }
 
 /* ---------------- 按钮 ---------------- */
 .btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 9px 22px;
   border: 1px solid transparent;
-  border-radius: 24px;
+  border-radius: var(--radius-pill);
   font-size: 15px;
+  font-family: inherit;
+  line-height: 1.2;
   cursor: pointer;
   text-align: center;
-  transition: all .2s;
   background: #fff;
+  color: var(--text);
+  transition: background .2s var(--ease), box-shadow .2s var(--ease),
+              transform .12s var(--ease), border-color .2s var(--ease), color .2s var(--ease);
 }
-.btn:hover { opacity: .88; }
-.btn:disabled { opacity: .45; cursor: not-allowed; }
-.btn-primary { background: var(--primary); color: #fff; }
+/* 悬浮轻微上浮，按下回落，形成可点击的物理反馈 */
+.btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-2); }
+.btn:active { transform: translateY(0); box-shadow: var(--shadow-1); }
+.btn:disabled, .btn:disabled:hover {
+  opacity: .45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+/* 键盘可达性：仅键盘聚焦时出现焦点环，鼠标点击不出现 */
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--primary-100);
+}
+/* 主按钮：同色系渐变，比纯色更有质感 */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-700) 100%);
+  color: #fff;
+  box-shadow: var(--shadow-1);
+}
+.btn-primary:hover { box-shadow: 0 6px 16px rgba(107, 135, 196, .32); }
 .btn-success { background: var(--success); color: #fff; }
 .btn-danger { background: var(--danger); color: #fff; }
-.btn-outline { border-color: var(--primary); color: var(--primary); background: #fff; }
+.btn-danger:hover { box-shadow: 0 6px 16px rgba(228, 103, 107, .30); }
+.btn-outline { border-color: var(--primary); color: var(--primary-700); background: #fff; }
+.btn-outline:hover { background: var(--primary-50); border-color: var(--primary-700); }
 .btn-sm { padding: 5px 14px; font-size: 13px; }
 .btn-lg { padding: 12px 34px; font-size: 16px; }
 .btn-block { display: block; width: 100%; }
