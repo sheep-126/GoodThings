@@ -47,11 +47,30 @@ async function refreshNav() {
         document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
       }
       window._currentUser = res.user;
+      refreshCartBadge();   // 已登录：刷新购物车数量气泡
       return res.user;
     }
   } catch (e) { /* 未登录不提示 */ }
   window._currentUser = null;
   return null;
+}
+
+/* ---------- 购物车数量气泡 ---------- */
+/* 读取购物车列表并汇总数量，渲染到导航栏"购物车"按钮右侧；失败静默处理，不影响主流程 */
+async function refreshCartBadge() {
+  const link = document.querySelector('.nav-right a[href="cart.html"]');
+  if (!link) return;
+  const remove = () => { const b = link.querySelector('.nav-badge'); if (b) b.remove(); };
+  if (!window._currentUser) { remove(); return; }
+  try {
+    const res = await API.get('/api/cart/list');
+    const list = res.data || [];
+    const total = list.reduce((n, it) => n + (Number(it.Quantity) || 0), 0);
+    if (!total) { remove(); return; }
+    let badge = link.querySelector('.nav-badge');
+    if (!badge) { badge = document.createElement('span'); badge.className = 'nav-badge'; link.appendChild(badge); }
+    badge.textContent = total > 99 ? '99+' : String(total);
+  } catch (e) { remove(); }
 }
 
 /* 未登录则跳转到登录页，并记录来源页以便登录后跳回 */
