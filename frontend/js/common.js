@@ -105,11 +105,18 @@ function renderProductCard(p) {
   return `
     <div class="product-card" data-id="${p.ProductID}">
       <button class="fav-btn ${isFav ? 'active' : ''}" data-id="${p.ProductID}" title="收藏">${isFav ? '♥' : '♡'}</button>
-      <img class="product-img" src="${p.Image}" alt="${p.ProductName}" loading="lazy" onclick="location.href='detail.html?id=${p.ProductID}'">
+      <div class="card-media">
+        <img class="product-img" src="${p.Image}" alt="${p.ProductName}" loading="lazy" onclick="location.href='detail.html?id=${p.ProductID}'">
+        <span class="card-flag">${p.StyleTag || '通用'}</span>
+        <div class="card-mask"><span>查看详情</span></div>
+      </div>
       <div class="product-info">
         <div class="product-name" onclick="location.href='detail.html?id=${p.ProductID}'">${p.ProductName}</div>
         <div class="product-meta">${p.StyleTag || '通用'} · ${p.SceneTag || '多场景'} · ${p.CategoryName || ''}</div>
-        <span class="price">${formatPrice(p.Price)}</span>
+        <div class="product-foot">
+          <span class="price">${formatPrice(p.Price)}</span>
+          <span class="chip">${Number(p.IsSet) === 1 ? '套装' : '单品'}</span>
+        </div>
       </div>
     </div>`;
 }
