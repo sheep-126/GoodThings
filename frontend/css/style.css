@@ -562,6 +562,8 @@ a { color: var(--primary); text-decoration: none; }
 .table-wrap {
   background: var(--card-bg);
   border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-1);
   overflow-x: auto;
   overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
@@ -570,6 +572,8 @@ a { color: var(--primary); text-decoration: none; }
 .table { width: 100%; border-collapse: collapse; min-width: 640px; }
 .table th, .table td { padding: 11px 14px; border-bottom: 1px solid var(--border); text-align: left; font-size: 14px; }
 .table th { background: var(--primary-50); color: var(--text-light); font-weight: 600; white-space: nowrap; }
+.table tbody tr { transition: background-color .15s var(--ease); }
+.table tbody tr:hover td { background: var(--primary-50); }
 .table tr:last-child td { border-bottom: none; }
 .table .price { font-size: 14px; }
 .status-badge { padding: 2px 12px; border-radius: var(--radius-pill); font-size: 13px; background: var(--warning-soft); color: var(--warning); }
@@ -577,27 +581,65 @@ a { color: var(--primary); text-decoration: none; }
 .status-badge.shipped { background: var(--info-soft); color: var(--primary-700); }
 
 /* ---------------- 购物车 ---------------- */
-.cart-table td img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
-.cart-table input[type="number"] {
-  width: 64px;
-  padding: 6px;
-  border: 1px solid var(--border);
+/* 购物车表格：图片卡片化 + 数量步进器 */
+.cart-table td img {
+  width: 60px;
+  height: 60px;
   border-radius: var(--radius-sm);
-  text-align: center;
+  border: 1px solid var(--border);
+  object-fit: cover;
+  background: var(--primary-50);
 }
+.cart-table input[type="number"] {
+  width: 70px;
+  padding: 7px 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: #fff;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  transition: border-color .18s var(--ease), box-shadow .18s var(--ease);
+}
+/* 隐藏原生上下箭头，避免与胶囊外框冲突（回车/方向键仍可改值） */
+.cart-table input[type="number"]::-webkit-outer-spin-button,
+.cart-table input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.cart-table input[type="number"] {
+  -moz-appearance: textfield;
+}
+.cart-table input[type="number"]:hover { border-color: var(--primary-100); }
+.cart-table input[type="number"]:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-50);
+}
+/* 结算总价条：滚动时吸附在视口底部，随时可见合计与结算按钮 */
 .cart-bottom {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: var(--card-bg);
-  padding: 16px 20px;
-  border-radius: var(--radius);
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: saturate(180%) blur(12px);
+  backdrop-filter: saturate(180%) blur(12px);
+  padding: 14px 22px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-2);
   margin-top: 18px;
   flex-wrap: wrap;
   gap: 12px;
   width: 100%;
 }
 .cart-bottom .price { font-size: 22px; }
+.cart-bottom span { font-size: 14px; color: var(--text-light); }
 
 /* ---------------- 登录/注册 ---------------- */
 .auth-box {
