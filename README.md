@@ -1,41 +1,28 @@
-﻿下次自己打开的完整步骤
-第 1 步：确认 MySQL 已启动
-当前已启动，但电脑重启后需要重做这一步。
+﻿ 项目名称为GoodThings——"季节风格穿搭测试 + 模拟穿搭选购系统"
+ 部署在 GitHub https://github.com/sheep-126/GoodThings。
 
-图形方式：Win + R → 输入 services.msc → 找到 MySQL95 → 右键「启动」。
+项目定位：
+面向不会搭配的大学生：先测出适合的季节风格，再按风格与场景挑衣服，支持套装搭配、购物车下单与管理后台维护。
 
-命令行方式（管理员 PowerShell）：
+三层架构
+层	内容
+表现层	11 个 HTML 页面 + 13 个 JS + 流式 CSS（509 行），原生 HTML/CSS/JS，无前端框架
+接口层	Flask 后端，6 个蓝图共 27 个 RESTful API（认证 4 / 测验 3 / 商品 2 / 购物车 5 / 订单 3 / 管理 10）
+数据层	MySQL95，11 张表 + 1 个视图 + 1 个触发器 + 2 个存储过程
+三条业务链路
+① 登录 → session 保持身份 → 后续请求自动携带 Cookie
+② 答题 → 四季得分累加取最高 → 定春/夏/秋/冬季型 → 推荐对应商品
+③ 下单 → 事务汇总金额 → 建订单快照 → 触发器扣库存写流水 → 清购物车
+数据库亮点（答辩加分项）
+套装建模：Product.IsSet 标记套装，SetDetail 存配件明细与数量，详情页展示"单品合计 vs 套装价 vs 立省金额"
+事务下单：proc_create_order 用 START TRANSACTION + EXIT HANDLER 统一异常回滚，失败返回中文提示而非 500
+库存审计：trg_orderitem_after_insert 自动扣 Stock 并写入 StockRecord 流水表，只增不改可追溯对账
+运行方式
+双击 启动GoodThings.bat（需 UAC 提权），浏览器访问 http://127.0.0.1:5000/；MySQL95 服务需在 services.msc 中启动。
 
-powershell
-复制
-Start-Service MySQL95
-验证监听：
+测试账号
+管理员：admin / 123456（管理端题目/商品/订单维护）
+普通用户：stu01 / 123456（完整购物流程）
 
-powershell
-复制
-netstat -ano | findstr :3306
-看到 LISTENING 就说明 MySQL 已就绪。注意本机 MySQL 与 MySQL95 两个服务共用 3306 端口，只能启动其中一个，要启动的是 MySQL95。
 
-第 2 步：启动 Flask 后端
-打开 CMD（不要用 VSCode 的 Run Flask 按钮，原因见下方说明），依次执行：
-
-bat
-复制
-cd /d "D:\C作业\互联网web作业报告\大作业\FinalWork\backend"
-set PYTHONPATH=D:\lib\site-packages
-"D:\Python\python.exe" app.py
-窗口出现 Running on http://127.0.0.1:5000 即成功，这个窗口不能关，关掉服务就停。
-
-关键点：D:\Python 是便携式安装，flask 和 pymysql 实际位于 D:\lib\site-packages，所以必须设置 PYTHONPATH，否则会报 ModuleNotFoundError: No module named 'flask'。
-
-第 3 步：浏览器访问
-打开 Edge 或 Chrome，访问 http://127.0.0.1:5000/ 。
-
-第 4 步：停止服务
-在 Flask 窗口按 Ctrl + C；若窗口已关但端口仍被占用：
-
-bat
-复制
-taskkill /PID 20388 /T /F
-cd /d "D:\C作业\互联网web作业报告\大作业\FinalWork\backend"
-taskkill /PID 20388 /T /F
+网址为 http://127.0.0.1:5000 
