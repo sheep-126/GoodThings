@@ -430,20 +430,38 @@ a { color: var(--primary); text-decoration: none; }
   background: var(--card-bg);
   padding: clamp(16px, 1.8vw, 30px);
   border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-1);
   width: 100%;
   min-height: calc(100vh - 220px);   /* 纵向撑满首屏，避免内容少时下方大片空白 */
   margin-bottom: clamp(16px, 1.6vw, 28px);
 }
+/* 大屏下主图吸顶：滚动查看下方套装明细/参数时图片保持可见 */
 .detail-img {
+  position: sticky;
+  top: 84px;
   width: clamp(300px, 36vw, 720px);
   max-width: 100%;
+  max-height: calc(100vh - 120px);
   height: auto;
   align-self: flex-start;
   border-radius: var(--radius);
+  border: 1px solid var(--border);
   flex: 0 0 auto;
   object-fit: cover;
+  background: var(--primary-50);
 }
-.detail-info { flex: 1 1 320px; min-width: 0; }
+/* 信息区独立成卡，与左侧图区分层级 */
+.detail-info {
+  flex: 1 1 320px;
+  min-width: 0;
+  align-self: flex-start;
+  padding: clamp(14px, 1.5vw, 26px);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1);
+}
 .detail-info h2 { font-size: clamp(20px, 1.8vw, 26px); margin-bottom: 10px; }
 .detail-tags { margin: 10px 0; }
 .tag-chip {
@@ -464,7 +482,8 @@ a { color: var(--primary); text-decoration: none; }
   gap: 14px;
   background: var(--bg);
   padding: 10px 14px;
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
   margin-bottom: 10px;
   flex-wrap: wrap;
 }
@@ -744,7 +763,13 @@ a { color: var(--primary); text-decoration: none; }
 @media (max-width: 1024px) {
   :root { --gutter: clamp(14px, 3vw, 28px); }
   .detail-box { flex-direction: column; min-height: auto; }
-  .detail-img { width: 100%; max-height: 420px; align-self: stretch; }
+  .detail-img {
+    position: static;            /* 纵向排列时取消吸顶 */
+    width: 100%;
+    max-height: 420px;
+    align-self: stretch;
+  }
+  .detail-info { align-self: stretch; }
   .nav-links { gap: 4px; }
   .nav-link { padding: 6px 10px; font-size: 14px; }
 }
