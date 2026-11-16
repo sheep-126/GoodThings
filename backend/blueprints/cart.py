@@ -69,7 +69,7 @@ def cart_list():
         (user["UserID"],),
     )
     for r in rows:
-        r["Image"] = r["Image"] or "images/p{}.svg".format(r["ProductID"])
+        r["Image"] = r["Image"] or "images/p{}.jpg".format(r["ProductID"])
     return jsonify({"success": True, "data": rows})
 
 

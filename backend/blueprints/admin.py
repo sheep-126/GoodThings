@@ -161,6 +161,9 @@ def products():
            FROM Product p LEFT JOIN Category c ON p.CategoryID=c.CategoryID
            ORDER BY p.ProductID""",
     )
+    for r in rows:
+        # 图片兜底：后台新增商品未填 Image 时，仍能显示 images/p{ID}.jpg
+        r["Image"] = r["Image"] or "images/p{}.jpg".format(r["ProductID"])
     return jsonify({"success": True, "data": rows})
 
 

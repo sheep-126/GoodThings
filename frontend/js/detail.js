@@ -22,6 +22,17 @@
           <div class="item-price">${formatPrice(it.Price)}</div>
         </div>`).join('') || '<p class="tip">该商品为单品，无套装明细。</p>';
 
+      // 套装价格对账：单品合计 vs 套装价，避免"套装价与明细相加不一致"引起误解
+      const itemsTotal = items.reduce((sum, it) => sum + Number(it.Price) * Number(it.Quantity || 1), 0);
+      const save = itemsTotal - Number(p.Price);
+      const summaryHtml = (p.IsSet && items.length) ? `
+        <div class="items-summary">
+          <span>单品合计 <b>${formatPrice(itemsTotal)}</b></span>
+          <span class="divider">|</span>
+          <span>套装价 <b class="price">${formatPrice(p.Price)}</b></span>
+          ${save > 0.001 ? `<span class="save-chip">套装立省 ${formatPrice(save)}</span>` : ''}
+        </div>` : '';
+
       box.innerHTML = `
         <img class="detail-img" src="${p.Image}" alt="${p.ProductName}" loading="lazy">
         <div class="detail-info">
@@ -37,7 +48,8 @@
             <button class="btn btn-success" id="buyNowBtn">立即下单</button>
             <a class="btn btn-outline" href="wardrobe.html">返回穿搭库</a>
           </div>
-          <h3 class="items-title">套装单品明细</h3>
+          <h3 class="items-title">${p.IsSet ? '套装单品明细' : '商品信息'}</h3>
+          ${summaryHtml}
           ${itemRows}
           <p class="tip">库存 ${p.Stock} 件 · 模拟选购系统，无真实支付</p>
         </div>`;

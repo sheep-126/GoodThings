@@ -50,7 +50,7 @@ def index():
 @app.route("/<path:filename>")
 def static_files(filename):
     """
-    其余页面与静态资源：quiz.html、css/style.css、js/*.js、images/*.svg 等
+    其余页面与静态资源：quiz.html、css/style.css、js/*.js、images/*.jpg 等
     直接按 frontend 目录下的相对路径访问即可。
     """
     return send_from_directory(config.FRONTEND_DIR, filename)

@@ -14,7 +14,7 @@ import os
 DB_HOST = "127.0.0.1"          # 数据库地址
 DB_PORT = 3306                 # 数据库端口
 DB_USER = "root"               # 数据库用户名
-DB_PASSWORD = "123456"         # 【占位】数据库密码，请改成你自己的密码
+DB_PASSWORD = "mysql"          # 数据库密码（已由用户提供）
 DB_NAME = "Goodthing"          # 数据库名（与 database/Goodthing.sql 一致）
 DB_CHARSET = "utf8mb4"         # 字符集
 

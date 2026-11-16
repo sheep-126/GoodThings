@@ -154,6 +154,6 @@ def order_detail(order_id):
         (order_id,),
     )
     for it in items:
-        it["Image"] = it["Image"] or "images/p{}.svg".format(it["ProductID"])
+        it["Image"] = it["Image"] or "images/p{}.jpg".format(it["ProductID"])
 
     return jsonify({"success": True, "data": {"order": order, "items": items}})

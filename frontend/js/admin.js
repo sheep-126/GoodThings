@@ -182,6 +182,9 @@
         <label style="flex:1">分类 ID<input id="fCategory" type="number" value="${(p && p.CategoryID) || 1}"></label>
       </div>
       <div class="form-row">
+        <label style="flex:2">图片路径<input id="fImage" value="${(p && p.Image) || ''}" placeholder="留空自动使用 images/p{商品ID}.jpg"></label>
+      </div>
+      <div class="form-row">
         <label>价格<input id="fPrice" type="number" step="0.01" value="${(p && p.Price) || ''}"></label>
         <label>库存<input id="fStock" type="number" value="${(p && p.Stock) || 100}"></label>
         <label>类型
@@ -286,6 +289,7 @@
           style_tag: document.getElementById('fStyle').value,
           scene_tag: document.getElementById('fScene').value.trim(),
           is_set: Number(document.getElementById('fIsSet').value),
+          image: (document.getElementById('fImage').value || '').trim(),
         };
         if (!body.product_name) { showToast('商品名称不能为空', 'err'); return; }
         if (modalState.id) {
