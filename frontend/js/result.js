@@ -18,11 +18,12 @@
     let scoresHtml = '';
     try {
       const scores = JSON.parse(getQueryParam('scores') || '{}');
+      // 归一化四季得分用于条形图比例（0~1），仅作宽度变量，不改变展示数值
+      const seasons = ['春', '夏', '秋', '冬'];
+      const sum = seasons.reduce((a, k) => a + (Number(scores[k]) || 0), 0) || 1;
+      const pct = (k) => ((Number(scores[k]) || 0) / sum).toFixed(3);
       scoresHtml = `<div class="score-line">
-        <span>春型 <b>${scores['春'] ?? '-'}</b></span>
-        <span>夏型 <b>${scores['夏'] ?? '-'}</b></span>
-        <span>秋型 <b>${scores['秋'] ?? '-'}</b></span>
-        <span>冬型 <b>${scores['冬'] ?? '-'}</b></span>
+        ${seasons.map((k) => `<span style="--pct:${pct(k)}">${k}型 <b>${scores[k] ?? '-'}</b></span>`).join('')}
       </div>`;
     } catch (e) { /* 直接访问结果页时无得分，不展示 */ }
     card.innerHTML = `

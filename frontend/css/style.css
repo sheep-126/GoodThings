@@ -624,8 +624,52 @@ a { color: var(--primary); text-decoration: none; }
 }
 .result-name { font-size: clamp(19px, 1.7vw, 23px); margin-bottom: 8px; }
 .result-desc { color: var(--text-light); max-width: 760px; margin: 0 auto 14px; }
-.score-line { display: flex; justify-content: center; gap: clamp(14px, 2vw, 30px); flex-wrap: wrap; font-size: 14px; }
-.score-line b { font-size: 18px; }
+/* 四季得分条形图：轨道与填充条全部由 CSS 绘制，--pct 仅提供 0~1 的比例值 */
+.score-line {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+  max-width: 760px;
+  margin: 18px auto 0;
+  text-align: left;
+  font-size: 13px;
+}
+.score-line span {
+  position: relative;
+  display: block;
+  padding: 12px 14px 22px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-light);
+}
+.score-line b {
+  display: block;
+  font-size: clamp(20px, 1.8vw, 26px);
+  line-height: 1.15;
+  color: var(--primary-700);
+}
+.score-line span::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 10px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--primary-50);
+}
+.score-line span::after {
+  content: "";
+  position: absolute;
+  left: 14px;
+  bottom: 10px;
+  height: 6px;
+  width: calc((100% - 28px) * var(--pct, 0));
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transition: width .6s var(--ease);
+}
 
 /* ---------------- 表格（外层横向滚动，宽屏自动铺满） ---------------- */
 .table-wrap {
