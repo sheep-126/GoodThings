@@ -16,11 +16,11 @@ CREATE TABLE User(
     UserName VARCHAR(20) NOT NULL UNIQUE COMMENT '用户名',
     Password VARCHAR(32) NOT NULL COMMENT '加密密码',
     NickName VARCHAR(20) COMMENT '昵称',
-    Gender VARCHAR(4) COMMENT '性别',
+    Gender VARCHAR(4) COMMENT '性别：男/女/保密，可为空',
     Phone VARCHAR(20) COMMENT '手机号',
     RegisterTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
-    IsAdmin TINYINT DEFAULT 0 COMMENT '是否管理员 0普通用户 1管理员'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户表';
+    IsAdmin TINYINT NOT NULL DEFAULT 0 COMMENT '是否管理员：0普通用户，1管理员'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户表';
 
 -- ==============================================
 -- 2.商品分类表 Category
@@ -29,7 +29,7 @@ DROP TABLE IF EXISTS Category;
 CREATE TABLE Category(
     CategoryID INT PRIMARY KEY AUTO_INCREMENT COMMENT '分类编号',
     CategoryName VARCHAR(20) NOT NULL UNIQUE COMMENT '分类名称'
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品分类';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品分类';
 
 -- ==============================================
 -- 3.商品表 Product
@@ -42,13 +42,13 @@ CREATE TABLE Product(
     CategoryID INT COMMENT '分类外键',
     Price DECIMAL(10,2) COMMENT '商品价格',
     Stock INT NOT NULL DEFAULT 0 COMMENT '库存，不能负数',
-    Image VARCHAR(100) COMMENT '图片路径',
+    Image VARCHAR(100) COMMENT '商品图片相对路径，前端按此加载',
     StyleTag VARCHAR(10) COMMENT '四季色彩标签：春/夏/秋/冬',
     SceneTag VARCHAR(10) COMMENT '场景标签：上课、约会聚会、出游逛街、居家',
-    IsSet TINYINT DEFAULT 0 COMMENT '0单品，1套装',
+    IsSet TINYINT NOT NULL DEFAULT 0 COMMENT '商品形态：0单品，1套装（套装内容见 SetDetail）',
     CONSTRAINT fk_product_category FOREIGN KEY(CategoryID) REFERENCES Category(CategoryID),
     CHECK(Stock >= 0)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='商品（单品/套装）';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品（单品/套装）';
 
 -- ==============================================
 -- 4.套装明细表 SetDetail
@@ -57,11 +57,11 @@ DROP TABLE IF EXISTS SetDetail;
 CREATE TABLE SetDetail(
     SetProductID INT COMMENT '套装商品ID',
     ItemProductID INT COMMENT '单品商品ID',
-    Quantity INT NOT NULL DEFAULT 1 COMMENT '套装内单品数量',
+    Quantity INT NOT NULL DEFAULT 1 COMMENT '套装内该单品的件数',
     PRIMARY KEY(SetProductID,ItemProductID),
     CONSTRAINT fk_setdetail_set FOREIGN KEY(SetProductID) REFERENCES Product(ProductID),
     CONSTRAINT fk_setdetail_item FOREIGN KEY(ItemProductID) REFERENCES Product(ProductID)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='套装明细';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='套装明细';
 
 -- ==============================================
 -- 5.风格题目表 StyleQuestion
@@ -69,9 +69,9 @@ CREATE TABLE SetDetail(
 DROP TABLE IF EXISTS StyleQuestion;
 CREATE TABLE StyleQuestion(
     QuestionID INT PRIMARY KEY AUTO_INCREMENT COMMENT '题目编号',
-    QuestionNo INT COMMENT '题目题号',
+    QuestionNo INT NOT NULL UNIQUE COMMENT '题目题号，答题顺序以此排序',
     QuestionText VARCHAR(200) COMMENT '问卷题目内容'
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='四季色彩测试题目';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='四季色彩测试题目';
 
 -- ==============================================
 -- 6.风格选项表 StyleOption
@@ -81,12 +81,12 @@ DROP TABLE IF EXISTS StyleOption;
 CREATE TABLE StyleOption(
     OptionID INT PRIMARY KEY AUTO_INCREMENT COMMENT '选项编号',
     QuestionID INT NOT NULL COMMENT '所属题目外键',
-    OptionLetter CHAR(1) COMMENT '选项A/B/C',
+    OptionLetter CHAR(1) COMMENT '选项字母，取值 A/B/C',
     OptionText VARCHAR(100) COMMENT '选项文字',
     StyleTag VARCHAR(10) COMMENT '对应四季标签：春/夏/秋/冬',
-    Score DECIMAL(3,1) COMMENT '该选项对应季型得分，支持0.5',
+    Score DECIMAL(3,1) NOT NULL DEFAULT 1.0 COMMENT '该选项计入对应季型的得分，支持 0.5 步进',
     CONSTRAINT fk_option_question FOREIGN KEY(QuestionID) REFERENCES StyleQuestion(QuestionID)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='四季色彩测试选项';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='四季色彩测试选项';
 
 -- ==============================================
 -- 7.【重点修改】风格测试结果表 StyleTestResult
@@ -101,9 +101,9 @@ CREATE TABLE StyleTestResult(
     summer_score DECIMAL(3,1) DEFAULT 0 COMMENT '夏型得分',
     autumn_score DECIMAL(3,1) DEFAULT 0 COMMENT '秋型得分',
     winter_score DECIMAL(3,1) DEFAULT 0 COMMENT '冬型得分',
-    FinalStyleTag VARCHAR(10) COMMENT '最终季型结果：春/夏/秋/冬',
+    FinalStyleTag VARCHAR(10) COMMENT '最终季型结果枚举：春/夏/秋/冬',
     CONSTRAINT fk_test_user FOREIGN KEY(UserID) REFERENCES User(UserID)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户四季色彩测试结果';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户四季色彩测试结果';
 
 -- ==============================================
 -- 8.购物车 Cart
@@ -113,12 +113,12 @@ CREATE TABLE Cart(
     CartID INT PRIMARY KEY AUTO_INCREMENT COMMENT '购物车记录ID',
     UserID INT NOT NULL COMMENT '用户外键',
     ProductID INT NOT NULL COMMENT '商品外键',
-    Quantity INT NOT NULL COMMENT '数量1‑99',
+    Quantity INT NOT NULL COMMENT '购买数量，取值范围 1-99',
     AddTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '加入时间',
     CONSTRAINT fk_cart_user FOREIGN KEY(UserID) REFERENCES User(UserID),
     CONSTRAINT fk_cart_product FOREIGN KEY(ProductID) REFERENCES Product(ProductID),
     CHECK(Quantity BETWEEN 1 AND 99)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='购物车';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='购物车';
 
 -- ==============================================
 -- 9.订单表 Orders
@@ -128,10 +128,10 @@ CREATE TABLE Orders(
     OrderID INT PRIMARY KEY AUTO_INCREMENT COMMENT '订单编号',
     UserID INT NOT NULL COMMENT '用户外键',
     OrderTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '下单时间',
-    TotalAmount DECIMAL(10,2) COMMENT '订单总金额',
-    OrderStatus VARCHAR(10) COMMENT '订单状态：待付款/已付款/已发货',
+    TotalAmount DECIMAL(10,2) NOT NULL DEFAULT 0 COMMENT '订单总金额，由购物车明细汇总',
+    OrderStatus VARCHAR(10) DEFAULT '已付款' COMMENT '订单状态枚举：待付款/已付款/已发货',
     CONSTRAINT fk_order_user FOREIGN KEY(UserID) REFERENCES User(UserID)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单主表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='订单主表';
 
 -- ==============================================
 -- 10.订单明细表 OrderItem
@@ -145,7 +145,7 @@ CREATE TABLE OrderItem(
     UnitPrice DECIMAL(10,2) COMMENT '成交单价',
     CONSTRAINT fk_item_order FOREIGN KEY(OrderID) REFERENCES Orders(OrderID),
     CONSTRAINT fk_item_product FOREIGN KEY(ProductID) REFERENCES Product(ProductID)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='订单明细';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='订单明细';
 
 -- ==============================================
 -- 11.库存流水 StockRecord
@@ -155,10 +155,10 @@ CREATE TABLE StockRecord(
     RecordID INT PRIMARY KEY AUTO_INCREMENT COMMENT '流水编号',
     ProductID INT NOT NULL COMMENT '商品外键',
     ChangeQty INT NOT NULL COMMENT '变动量：下单扣库存负数，退款正数',
-    ChangeType VARCHAR(10) COMMENT '变动类型：下单、退款',
+    ChangeType VARCHAR(10) NOT NULL DEFAULT '下单' COMMENT '变动类型枚举：下单（扣减）/退款（回补），预留扩展',
     ChangeTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '变动时间',
     CONSTRAINT fk_stock_product FOREIGN KEY(ProductID) REFERENCES Product(ProductID)
-)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='库存变动流水记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='库存变动流水记录';
 
 -- ==============================================
 -- 插入四季色彩 10道测试题目
