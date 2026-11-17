@@ -389,35 +389,37 @@ BEGIN
     END;
 
     START TRANSACTION;
-    SELECT SUM(c.Quantity * p.Price) INTO total
-    FROM Cart c JOIN Product p ON c.ProductID=p.ProductID
+    -- 明细快照必须落临时表：若 INSERT INTO OrderItem 的 SELECT 直接引用 Product，
+    -- AFTER INSERT 触发器再 UPDATE Product 就会触发 MySQL 1442（表已被本语句占用），
+    -- 所以先把（商品、数量、成交单价）析出到临时表；金额汇总也复用该快照，
+    -- 避免对 Cart/Product 的重复 JOIN（原实现汇总一次、明细再 JOIN 一次）。
+    DROP TEMPORARY TABLE IF EXISTS tmp_order_items;
+    CREATE TEMPORARY TABLE tmp_order_items (
+        ProductID INT           NOT NULL,
+        Quantity  INT           NOT NULL,
+        UnitPrice DECIMAL(10,2) NOT NULL
+    ) ENGINE=MEMORY;
+
+    INSERT INTO tmp_order_items(ProductID, Quantity, UnitPrice)
+    SELECT c.ProductID, c.Quantity, p.Price
+    FROM Cart c JOIN Product p ON c.ProductID = p.ProductID
     WHERE c.UserID = in_UserID;
+
+    SELECT SUM(Quantity * UnitPrice) INTO total FROM tmp_order_items;
 
     IF total IS NULL THEN
         SET out_ret_msg='购物车为空，无法下单';
+        DROP TEMPORARY TABLE IF EXISTS tmp_order_items;
         ROLLBACK;
     ELSE
         INSERT INTO Orders(UserID,TotalAmount,OrderStatus) VALUES(in_UserID,total,'已付款');
         SET oid = LAST_INSERT_ID();
-
-        -- 先用临时表取出明细（避免 INSERT 语句直接引用 Product，
-        -- 否则触发器更新 Product 会触发 MySQL 1442 限制）
-        CREATE TEMPORARY TABLE tmp_order_items AS
-        SELECT c.ProductID, c.Quantity, p.Price AS UnitPrice
-        FROM Cart c JOIN Product p ON c.ProductID=p.ProductID
-        WHERE c.UserID = in_UserID;
-
+        -- 库存扣减与库存流水由触发器 trg_orderitem_after_insert 自动完成
         INSERT INTO OrderItem(OrderID,ProductID,Quantity,UnitPrice)
         SELECT oid, ProductID, Quantity, UnitPrice FROM tmp_order_items;
-
         DROP TEMPORARY TABLE IF EXISTS tmp_order_items;
-
-        -- 库存扣减与库存流水由触发器 trg_orderitem_after_insert 自动完成
-
         DELETE FROM Cart WHERE UserID = in_UserID;
-
         COMMIT;
-        SET out_ret_msg=CONCAT('下单成功，订单编号：',oid);
     END IF;
 END //
 DELIMITER ;
