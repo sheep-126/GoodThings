@@ -27,7 +27,7 @@
       }
       countTip.textContent = '共 ' + list.length + ' 件';
       if (!list.length) {
-        grid.innerHTML = '<p class="tip">没有符合条件的商品，换个筛选条件试试。</p>';
+        renderEmpty(grid, { title: '没有符合条件的商品', desc: '换个筛选条件试试，或清空条件查看全部。' });
         return;
       }
       grid.innerHTML = list.map(renderProductCard).join('');

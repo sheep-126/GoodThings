@@ -32,7 +32,7 @@
       const res = await API.get('/api/admin/questions');
       const rows = res.data || [];
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#8a8a8a">暂无题目</td></tr>';
+        renderEmpty(tbody, { colspan: 4, cell: true, title: '暂无题目', desc: '点击右上角新增题目，开始搭建测试题库。' });
         return;
       }
       tbody.innerHTML = rows.map((q, i) => `
@@ -57,7 +57,7 @@
       const res = await API.get('/api/admin/products');
       const rows = res.data || [];
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#8a8a8a">暂无商品</td></tr>';
+        renderEmpty(tbody, { colspan: 9, cell: true, title: '暂无商品', desc: '新增商品后即可在前台穿搭库展示。' });
         return;
       }
       tbody.innerHTML = rows.map(p => `
@@ -87,7 +87,7 @@
       const res = await API.get('/api/admin/orders');
       const rows = res.data || [];
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8a8a8a">暂无订单</td></tr>';
+        renderEmpty(tbody, { colspan: 6, cell: true, title: '暂无订单', desc: '用户下单后，订单会在此处实时汇总。' });
         return;
       }
       tbody.innerHTML = rows.map(o => `

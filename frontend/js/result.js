@@ -40,7 +40,11 @@
       const res = await API.get('/api/shop/products?style=' + encodeURIComponent(tag));
       const list = (res.data || []).slice(0, 3); // 最多 3 套
       if (!list.length) {
-        grid.innerHTML = '<p class="tip">该季型暂无适配套装，去看看穿搭库其他商品吧。</p>';
+        renderEmpty(grid, {
+      title: '暂无适配套装',
+      desc: '该季型暂无适配套装，去看看穿搭库其他商品吧。',
+      actionText: '去穿搭库', actionHref: 'wardrobe.html'
+    });
         return;
       }
       grid.innerHTML = list.map(renderProductCard).join('');

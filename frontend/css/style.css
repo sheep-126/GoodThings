@@ -261,6 +261,45 @@ a { color: var(--primary); text-decoration: none; }
 .center { text-align: center; }
 .tip { color: var(--text-light); font-size: 13px; margin-top: 12px; }
 
+/* ---------------- 空状态组件（列表无数据时统一占位） ---------------- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: clamp(34px, 6vw, 64px) 20px;
+  text-align: center;
+  color: var(--text-light);
+}
+.empty-state .empty-ico {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  margin-bottom: 6px;
+  background: var(--primary-50);
+  color: var(--primary);
+  font-size: 24px;
+  line-height: 1;
+}
+.empty-state .empty-title { font-size: 15px; font-weight: 600; color: var(--text); }
+.empty-state .empty-desc { font-size: 13px; max-width: 340px; line-height: 1.7; }
+.empty-state .empty-action {
+  margin-top: 12px;
+  padding: 8px 20px;
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+  color: #fff;
+  font-size: 13px;
+  text-decoration: none;
+  transition: background-color .18s var(--ease), transform .18s var(--ease);
+}
+.empty-state .empty-action:hover { background: var(--primary-700); transform: translateY(-1px); }
+.empty-state.is-cell { padding: 28px 16px; }
+.empty-state.is-cell .empty-ico { width: 44px; height: 44px; font-size: 19px; }
+
 /* ---------------- 商品卡片网格（auto-fit，窗口越宽列数越多） ---------------- */
 .card-grid {
   display: grid;
@@ -855,11 +894,16 @@ a { color: var(--primary); text-decoration: none; }
   z-index: 999;
   box-shadow: var(--shadow-3);
   opacity: 0;
-  transition: opacity .25s;
+  transform: translate(-50%, -14px);
+  transition: opacity .26s var(--ease), transform .26s var(--ease);
   pointer-events: none;
+  will-change: opacity, transform;
   max-width: 90vw;
 }
-.toast.show { opacity: 1; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+@media (prefers-reduced-motion: reduce) {
+  .toast { transition: opacity .01s; transform: translate(-50%, 0); }
+}
 .toast.ok { background: var(--success); }
 .toast.err { background: var(--danger); }
 

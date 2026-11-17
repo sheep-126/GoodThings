@@ -12,7 +12,11 @@
       const res = await API.get('/api/order/list');
       const rows = res.data || [];
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8a8a8a">还没有订单，去 <a href="wardrobe.html">穿搭库</a> 选购吧</td></tr>';
+        renderEmpty(tbody, {
+      colspan: 6, cell: true,
+      title: '还没有订单', desc: '去穿搭库挑一套合适的搭配下单试试。',
+      actionText: '去穿搭库', actionHref: 'wardrobe.html'
+    });
         return;
       }
       tbody.innerHTML = rows.map(r => `

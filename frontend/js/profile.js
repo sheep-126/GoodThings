@@ -24,7 +24,11 @@
       const res = await API.get('/api/quiz/records');
       const rows = res.data || [];
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8a8a8a">还没有测试记录，去 <a href="quiz.html">做一次测试</a></td></tr>';
+        renderEmpty(tbody, {
+      colspan: 6, cell: true,
+      title: '还没有测试记录', desc: '完成一次季节风格测试后，记录会保存在这里。',
+      actionText: '做一次测试', actionHref: 'quiz.html'
+    });
         return;
       }
       tbody.innerHTML = rows.map(r => `

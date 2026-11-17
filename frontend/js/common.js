@@ -11,6 +11,33 @@ function formatPrice(value) {
 }
 
 /* ---------- 轻提示弹窗（成功/失败） ---------- */
+/* 空状态占位：统一各列表"无数据"时的视觉与文案结构
+   opts = { title, desc, icon, actionText, actionHref, cell, colspan }
+   cell / colspan 用于 <tbody> 场景，会生成带 colspan 的整行包裹 */
+function emptyHtml(opts) {
+  const o = Object.assign({
+    icon: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" '
+        + 'stroke-width="1.6" stroke-linecap="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/>'
+        + '<path d="M3.5 10h17M8 14.5h5"/></svg>',
+    title: '暂无数据', desc: '', actionText: '', actionHref: '', cell: false
+  }, opts || {});
+  const act = (o.actionText && o.actionHref)
+    ? '<a class="empty-action" href="' + o.actionHref + '">' + o.actionText + '</a>' : '';
+  return '<div class="empty-state' + (o.cell ? ' is-cell' : '') + '">'
+    + '<span class="empty-ico">' + o.icon + '</span>'
+    + '<div class="empty-title">' + o.title + '</div>'
+    + (o.desc ? '<div class="empty-desc">' + o.desc + '</div>' : '')
+    + act + '</div>';
+}
+/* target 支持 DOM 元素或选择器字符串 */
+function renderEmpty(target, opts) {
+  const el = typeof target === 'string' ? document.querySelector(target) : target;
+  if (!el) return;
+  const o = opts || {};
+  const inner = emptyHtml(o);
+  el.innerHTML = o.colspan ? ('<tr><td colspan="' + o.colspan + '">' + inner + '</td></tr>') : inner;
+}
+
 function showToast(msg, type = 'ok', duration = 2200) {
   let el = document.querySelector('.toast');
   if (!el) {

@@ -11,7 +11,7 @@
       list.sort((a, b) => (b.IsSet || 0) - (a.IsSet || 0));
       list = list.slice(0, 6);
       if (!list.length) {
-        grid.innerHTML = '<p class="tip">暂无商品，请先导入数据库并录入商品数据。</p>';
+        renderEmpty(grid, { title: '暂无商品', desc: '请先导入数据库并录入商品数据。' });
         return;
       }
       grid.innerHTML = list.map(renderProductCard).join('');
