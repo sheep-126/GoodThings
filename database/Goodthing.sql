@@ -1,5 +1,12 @@
 -- ==============================================
--- 1. 创建数据库
+-- 季节风格穿搭测试与模拟选购系统 —— 数据库重建脚本
+-- 执行方式：mysql -uroot -p --default-character-set=utf8mb4 Goodthing < Goodthing.sql
+-- 目录：一、建库 | 二、表结构（11 张） | 三、视图（1 个） | 四、触发器（1 个）
+--       五、存储过程（2 个） | 六、测试数据 | 七、收尾
+-- ==============================================
+
+-- ==============================================
+-- 【一、建库】数据库、字符集与全局开关
 -- ==============================================
 CREATE DATABASE IF NOT EXISTS Goodthing DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE Goodthing;
@@ -14,7 +21,7 @@ USE Goodthing;
 SET FOREIGN_KEY_CHECKS=0;
 
 -- ==============================================
--- 1. 用户表 User
+-- 【二、表结构 1/11】用户表 User
 -- ==============================================
 DROP TABLE IF EXISTS User;
 CREATE TABLE User(
@@ -29,7 +36,7 @@ CREATE TABLE User(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户表';
 
 -- ==============================================
--- 2.商品分类表 Category
+-- 【二、表结构 2/11】商品分类表 Category
 -- ==============================================
 DROP TABLE IF EXISTS Category;
 CREATE TABLE Category(
@@ -38,8 +45,7 @@ CREATE TABLE Category(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品分类';
 
 -- ==============================================
--- 3.商品表 Product
--- StyleTag 现在存：春 / 夏 / 秋 / 冬
+-- 【二、表结构 3/11】商品表 Product（StyleTag 存 春/夏/秋/冬）
 -- ==============================================
 DROP TABLE IF EXISTS Product;
 CREATE TABLE Product(
@@ -58,7 +64,7 @@ CREATE TABLE Product(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品（单品/套装）';
 
 -- ==============================================
--- 4.套装明细表 SetDetail
+-- 【二、表结构 4/11】套装明细表 SetDetail
 -- ==============================================
 DROP TABLE IF EXISTS SetDetail;
 CREATE TABLE SetDetail(
@@ -71,7 +77,7 @@ CREATE TABLE SetDetail(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='套装明细';
 
 -- ==============================================
--- 5.风格题目表 StyleQuestion
+-- 【二、表结构 5/11】风格题目表 StyleQuestion
 -- ==============================================
 DROP TABLE IF EXISTS StyleQuestion;
 CREATE TABLE StyleQuestion(
@@ -81,8 +87,7 @@ CREATE TABLE StyleQuestion(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='四季色彩测试题目';
 
 -- ==============================================
--- 6.风格选项表 StyleOption
--- StyleTag：春、夏、秋、冬；Score支持小数0.5
+-- 【二、表结构 6/11】风格选项表 StyleOption（StyleTag 取春/夏/秋/冬，Score 支持 0.5 步进）
 -- ==============================================
 DROP TABLE IF EXISTS StyleOption;
 CREATE TABLE StyleOption(
@@ -96,8 +101,7 @@ CREATE TABLE StyleOption(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='四季色彩测试选项';
 
 -- ==============================================
--- 7.【重点修改】风格测试结果表 StyleTestResult
--- 删除原来6种风格得分，改为春夏秋冬4个得分，支持小数
+-- 【二、表结构 7/11】风格测试结果表 StyleTestResult（四季得分支持小数）
 -- ==============================================
 DROP TABLE IF EXISTS StyleTestResult;
 CREATE TABLE StyleTestResult(
@@ -114,7 +118,7 @@ CREATE TABLE StyleTestResult(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户四季色彩测试结果';
 
 -- ==============================================
--- 8.购物车 Cart
+-- 【二、表结构 8/11】购物车 Cart
 -- ==============================================
 DROP TABLE IF EXISTS Cart;
 CREATE TABLE Cart(
@@ -130,7 +134,7 @@ CREATE TABLE Cart(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='购物车';
 
 -- ==============================================
--- 9.订单表 Orders
+-- 【二、表结构 9/11】订单表 Orders
 -- ==============================================
 DROP TABLE IF EXISTS Orders;
 CREATE TABLE Orders(
@@ -144,7 +148,7 @@ CREATE TABLE Orders(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='订单主表';
 
 -- ==============================================
--- 10.订单明细表 OrderItem
+-- 【二、表结构 10/11】订单明细表 OrderItem
 -- ==============================================
 DROP TABLE IF EXISTS OrderItem;
 CREATE TABLE OrderItem(
@@ -159,7 +163,7 @@ CREATE TABLE OrderItem(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='订单明细';
 
 -- ==============================================
--- 11.库存流水 StockRecord
+-- 【二、表结构 11/11】库存流水 StockRecord
 -- ==============================================
 DROP TABLE IF EXISTS StockRecord;
 CREATE TABLE StockRecord(
@@ -173,7 +177,7 @@ CREATE TABLE StockRecord(
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='库存变动流水记录';
 
 -- ==============================================
--- 视图 v_style_scene_product 商品推荐视图
+-- 【三、视图】商品推荐视图 v_style_scene_product
 -- ==============================================
 DROP VIEW IF EXISTS v_style_scene_product;
 -- 视图：商品列表专用宽视图（穿搭库/首页共用）
@@ -197,7 +201,7 @@ WHERE p.Stock>0;
 -- 示例：查询春型适配商品：SELECT * FROM v_style_scene_product WHERE StyleTag='春';
 
 -- ==============================================
--- 触发器：订单明细插入后自动扣减库存并写库存流水
+-- 【四、触发器】订单明细插入后扣减库存并写库存流水
 -- ==============================================
 DROP TRIGGER IF EXISTS trg_orderitem_after_insert;
 DELIMITER //
@@ -227,7 +231,7 @@ END //
 DELIMITER ;
 
 -- ==============================================
--- 存储过程1：下单业务 proc_create_order
+-- 【五、存储过程 1/2】下单业务 proc_create_order
 -- （订单+明细写入后由触发器自动扣库存并写流水）
 -- ==============================================
 DROP PROCEDURE IF EXISTS proc_create_order;
@@ -279,7 +283,7 @@ END //
 DELIMITER ;
 
 -- ==============================================
--- 存储过程2【已重写】统计四季色彩季型人数 proc_style_statistic
+-- 【五、存储过程 2/2】四季色彩季型人数统计 proc_style_statistic
 -- ==============================================
 DROP PROCEDURE IF EXISTS proc_style_statistic;
 DELIMITER //
@@ -291,16 +295,14 @@ BEGIN
 END //
 DELIMITER ;
 
--- =================测试调用示例=================
+-- 【附】手动验证用测试调用示例（默认注释，按需放开）
 -- SET @msg='';
 -- CALL proc_create_order(2,@msg);
 -- SELECT @msg;
 -- CALL proc_style_statistic();
 -- SELECT * FROM v_style_scene_product WHERE StyleTag='春';
 
--- 重建脚本结束：恢复外键检查
--- ==============================================
--- 测试数据（集中于脚本末尾，按外键依赖顺序：用户→分类→商品→套装明细→题库→选项→购物车→测试结果）
+-- 【六、测试数据】集中于脚本末尾，按外键依赖顺序：用户→分类→商品→套装明细→题库→选项→购物车→测试结果
 -- 说明：数据在视图/触发器/存储过程之后执行，便于单独重导；
 --       此处不插入 OrderItem，避免导入过程触发库存下限校验。
 -- ==============================================
@@ -455,5 +457,9 @@ INSERT INTO Cart(UserID,ProductID,Quantity) VALUES (2,1,2);
 -- 模拟一条测试结果：用户stu01(UserID=2)测试结果为春
 INSERT INTO StyleTestResult(UserID,spring_score,summer_score,autumn_score,winter_score,FinalStyleTag)
 VALUES(2,6.0,2.5,1.5,2.0,'春');
+
+-- ==============================================
+-- 【七、收尾】恢复外键检查，脚本执行完毕
+-- ==============================================
 
 SET FOREIGN_KEY_CHECKS=1;
