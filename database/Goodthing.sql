@@ -4,6 +4,12 @@
 CREATE DATABASE IF NOT EXISTS Goodthing DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE Goodthing;
 
+-- 索引规范：
+--   1) InnoDB 会为每个外键自动建索引，本脚本只在需要复合查询时显式声明以该外键列开头的联合索引，
+--      MySQL 检测到最左前缀后不再重复创建单列索引，从而避免同列冗余索引；
+--   2) Cart 在 (UserID, ProductID) 上建唯一索引，与后端"先查后更新"的加购逻辑一致，防止并发写出重复行；
+--   3) 主键与 UNIQUE 约束自带的索引不重复声明。
+
 -- 重建脚本：先关闭外键检查，避免 DROP 顺序受外键约束影响
 SET FOREIGN_KEY_CHECKS=0;
 
@@ -46,6 +52,7 @@ CREATE TABLE Product(
     StyleTag VARCHAR(10) COMMENT '四季色彩标签：春/夏/秋/冬',
     SceneTag VARCHAR(10) COMMENT '场景标签：上课、约会聚会、出游逛街、居家',
     IsSet TINYINT NOT NULL DEFAULT 0 COMMENT '商品形态：0单品，1套装（套装内容见 SetDetail）',
+    KEY idx_product_style_scene (StyleTag, SceneTag) COMMENT '穿搭库按季型+场景联合筛选',
     CONSTRAINT fk_product_category FOREIGN KEY(CategoryID) REFERENCES Category(CategoryID),
     CHECK(Stock >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='商品（单品/套装）';
@@ -102,6 +109,7 @@ CREATE TABLE StyleTestResult(
     autumn_score DECIMAL(3,1) DEFAULT 0 COMMENT '秋型得分',
     winter_score DECIMAL(3,1) DEFAULT 0 COMMENT '冬型得分',
     FinalStyleTag VARCHAR(10) COMMENT '最终季型结果枚举：春/夏/秋/冬',
+    KEY idx_test_user_time (UserID, TestTime) COMMENT '我的测试记录按时间倒序，覆盖 fk_test_user 前缀',
     CONSTRAINT fk_test_user FOREIGN KEY(UserID) REFERENCES User(UserID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='用户四季色彩测试结果';
 
@@ -115,6 +123,7 @@ CREATE TABLE Cart(
     ProductID INT NOT NULL COMMENT '商品外键',
     Quantity INT NOT NULL COMMENT '购买数量，取值范围 1-99',
     AddTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '加入时间',
+    UNIQUE KEY uk_cart_user_product (UserID, ProductID) COMMENT '同一用户同一商品只保留一行，覆盖 fk_cart_user 前缀，避免并发重复加购',
     CONSTRAINT fk_cart_user FOREIGN KEY(UserID) REFERENCES User(UserID),
     CONSTRAINT fk_cart_product FOREIGN KEY(ProductID) REFERENCES Product(ProductID),
     CHECK(Quantity BETWEEN 1 AND 99)
@@ -130,6 +139,7 @@ CREATE TABLE Orders(
     OrderTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '下单时间',
     TotalAmount DECIMAL(10,2) NOT NULL DEFAULT 0 COMMENT '订单总金额，由购物车明细汇总',
     OrderStatus VARCHAR(10) DEFAULT '已付款' COMMENT '订单状态枚举：待付款/已付款/已发货',
+    KEY idx_orders_user_time (UserID, OrderTime) COMMENT '我的订单按时间倒序分页，覆盖 fk_order_user 前缀',
     CONSTRAINT fk_order_user FOREIGN KEY(UserID) REFERENCES User(UserID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='订单主表';
 
@@ -143,6 +153,7 @@ CREATE TABLE OrderItem(
     ProductID INT NOT NULL COMMENT '商品外键',
     Quantity INT NOT NULL COMMENT '购买数量',
     UnitPrice DECIMAL(10,2) COMMENT '成交单价',
+    KEY idx_item_order (OrderID) COMMENT '按订单汇总明细，覆盖 fk_item_order 前缀',
     CONSTRAINT fk_item_order FOREIGN KEY(OrderID) REFERENCES Orders(OrderID),
     CONSTRAINT fk_item_product FOREIGN KEY(ProductID) REFERENCES Product(ProductID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='订单明细';
@@ -157,6 +168,7 @@ CREATE TABLE StockRecord(
     ChangeQty INT NOT NULL COMMENT '变动量：下单扣库存负数，退款正数',
     ChangeType VARCHAR(10) NOT NULL DEFAULT '下单' COMMENT '变动类型枚举：下单（扣减）/退款（回补），预留扩展',
     ChangeTime DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '变动时间',
+    KEY idx_stock_product_time (ProductID, ChangeTime) COMMENT '按商品追溯库存变动流水，覆盖 fk_stock_product 前缀',
     CONSTRAINT fk_stock_product FOREIGN KEY(ProductID) REFERENCES Product(ProductID)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='库存变动流水记录';
 
