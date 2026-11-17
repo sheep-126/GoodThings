@@ -42,7 +42,7 @@ CREATE TABLE Product(
     CategoryID INT COMMENT '分类外键',
     Price DECIMAL(10,2) COMMENT '商品价格',
     Stock INT NOT NULL DEFAULT 0 COMMENT '库存，不能负数',
-    Image VARCHAR(100) COMMENT '商品图片相对路径，前端按此加载',
+    Image VARCHAR(100) DEFAULT NULL COMMENT '商品图片相对路径；为空时由视图 v_style_scene_product 按 ProductID 生成默认路径',
     StyleTag VARCHAR(10) COMMENT '四季色彩标签：春/夏/秋/冬',
     SceneTag VARCHAR(10) COMMENT '场景标签：上课、约会聚会、出游逛街、居家',
     IsSet TINYINT NOT NULL DEFAULT 0 COMMENT '商品形态：0单品，1套装（套装内容见 SetDetail）',
@@ -332,7 +332,7 @@ SELECT
     c.CategoryName,
     p.Price,
     p.Stock,
-    p.Image,
+    COALESCE(p.Image, CONCAT('images/p', p.ProductID, '.jpg')) AS Image,
     p.StyleTag,
     p.SceneTag,
     p.IsSet
