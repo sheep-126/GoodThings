@@ -366,6 +366,21 @@ CREATE TRIGGER trg_orderitem_after_insert
 AFTER INSERT ON OrderItem
 FOR EACH ROW
 BEGIN
+    DECLARE cur_stock INT DEFAULT NULL;
+
+    SELECT Stock INTO cur_stock FROM Product WHERE ProductID = NEW.ProductID;
+
+    -- 库存下限校验：商品不存在或余量不足时直接抛错，
+    -- 由外层存储过程 proc_create_order 的 EXIT HANDLER 捕获并 ROLLBACK，
+    -- 避免并发下单把 Stock 扣成负数（原实现只做减法、不做判断）。
+    IF cur_stock IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = '库存校验失败：商品不存在';
+    ELSEIF cur_stock < NEW.Quantity THEN
+        SIGNAL SQLSTATE '45000'
+            SET MESSAGE_TEXT = '库存校验失败：商品库存不足';
+    END IF;
+
     UPDATE Product SET Stock = Stock - NEW.Quantity WHERE ProductID = NEW.ProductID;
     INSERT INTO StockRecord(ProductID,ChangeQty,ChangeType)
     VALUES (NEW.ProductID, -NEW.Quantity, '下单');
@@ -385,7 +400,7 @@ BEGIN
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
-        SET out_ret_msg='下单失败，库存不足或者数据异常';
+        SET out_ret_msg='下单失败：库存不足或数据异常，已回滚';
     END;
 
     START TRANSACTION;
