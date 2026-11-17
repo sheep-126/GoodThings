@@ -337,17 +337,20 @@ VALUES(2,6.0,2.5,1.5,2.0,'春');
 -- 视图 v_style_scene_product 商品推荐视图
 -- ==============================================
 DROP VIEW IF EXISTS v_style_scene_product;
+-- 视图：商品列表专用宽视图（穿搭库/首页共用）
+-- 只输出前端卡片与筛选真正读取的列：ProductID、ProductName、CategoryName、Price、
+-- StyleTag、SceneTag、IsSet、Image；库存 Stock 由商品详情接口直接读 Product 表返回，故不再冗余输出。
+-- 过滤条件 Stock>0 保证列表只出现可售商品；Image 的空值兜底在此统一处理。
 CREATE VIEW v_style_scene_product AS
 SELECT
     p.ProductID,
     p.ProductName,
     c.CategoryName,
     p.Price,
-    p.Stock,
-    COALESCE(p.Image, CONCAT('images/p', p.ProductID, '.jpg')) AS Image,
     p.StyleTag,
     p.SceneTag,
-    p.IsSet
+    p.IsSet,
+    COALESCE(p.Image, CONCAT('images/p', p.ProductID, '.jpg')) AS Image
 FROM Product p
 LEFT JOIN Category c ON p.CategoryID = c.CategoryID
 WHERE p.Stock>0;

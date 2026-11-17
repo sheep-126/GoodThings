@@ -33,7 +33,7 @@ def product_list():
     keyword = (request.args.get("keyword") or "").strip()
 
     sql = """
-        SELECT v.ProductID, v.ProductName, v.CategoryName, v.Price, v.Stock,
+        SELECT v.ProductID, v.ProductName, v.CategoryName, v.Price,
                v.StyleTag, v.SceneTag, v.IsSet, v.Image
         FROM v_style_scene_product v
         WHERE 1=1
