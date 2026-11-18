@@ -75,3 +75,10 @@ def product_detail(pid):
             it["Image"] = _image_path(it)
 
     return jsonify({"success": True, "data": {"product": p, "items": items}})
+
+def _image_path(row):
+    """Image 兜底：优先返回数据库中已有的图片路径，为空时按主键生成 images/p{ProductID}.jpg"""
+    img = (row.get("Image") or "").strip() if isinstance(row.get("Image"), str) else row.get("Image")
+    if img:
+        return img
+    return "images/p{}.jpg".format(row.get("ProductID"))
