@@ -46,6 +46,7 @@
           <div class="detail-actions">
             <button class="btn btn-primary" id="addCartBtn">加入购物车</button>
             <button class="btn btn-success" id="buyNowBtn">立即下单</button>
+            <button class="btn btn-outline" id="favDetailBtn" title="收藏" style="color:${isFavorite(p.ProductID) ? '#E4676B' : ''}">${isFavorite(p.ProductID) ? '已收藏 ♥' : '收藏 ♡'}</button>
             <a class="btn btn-outline" href="wardrobe.html">返回穿搭库</a>
           </div>
           <h3 class="items-title">${p.IsSet ? '套装单品明细' : '商品信息'}</h3>
@@ -56,6 +57,15 @@
 
       document.getElementById('addCartBtn').addEventListener('click', () => addToCart(false));
       document.getElementById('buyNowBtn').addEventListener('click', () => addToCart(true));
+
+      // 详情页收藏：与卡片共用 localStorage，状态互相同步
+      const favBtn = document.getElementById('favDetailBtn');
+      favBtn.addEventListener('click', () => {
+        const now = toggleFavorite(p.ProductID);
+        favBtn.textContent = now ? '已收藏 ♥' : '收藏 ♡';
+        favBtn.style.color = now ? '#E4676B' : '';
+        showToast(now ? '已加入收藏' : '已取消收藏', 'ok');
+      });
     } catch (e) {
       box.innerHTML = '<p class="tip">加载失败：' + e.message + '</p>';
     }
